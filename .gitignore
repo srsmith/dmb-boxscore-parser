@@ -1,0 +1,14 @@
+target/
+*.class
+dependency-reduced-pom.xml
+
+# NetBeans
+nbproject/
+nb-configuration.xml
+build/
+dist/
+
+# IDEs
+.idea/
+*.iml
+.vscode/

@@ -45,4 +45,14 @@ public class ErrantPitchNotation extends AbstractNotation {
     protected  void calculateRBI() {
         this.rbi = 0;
     }
+
+    /**
+     * Diamond Mind Baseball charges a run that scores on a passed ball as unearned,
+     * unlike official MLB scoring (rule 9.16), which treats passed balls the same as
+     * wild pitches -- wild-pitch-scored runs are unaffected here.
+     */
+    @Override
+    protected boolean runsScoredAreUnearned() {
+        return isPassedBall(this.notation);
+    }
 }

@@ -314,7 +314,7 @@ public abstract class AbstractNotation {
                         throw new Exception("You can't score twice in one play dummy: " + runner.getPlayerName());
                     }
                     BaserunnerScored scored = new BaserunnerScored(runner);
-                    if (this.unearnedRunsInEffect) {
+                    if (this.unearnedRunsInEffect || this.runsScoredAreUnearned()) {
                         scored.setEarned(false);
                     }
                     runnersScored.put(startBase.equals("B") ? "BA" : startBase + "B", scored);
@@ -417,6 +417,16 @@ public abstract class AbstractNotation {
      */
     public int getPhantomOuts() {
         return 0;
+    }
+
+    /**
+     * True for notation types where any run scoring on this specific play is unearned
+     * regardless of the outs/reconstructed-inning state -- e.g. Diamond Mind Baseball
+     * charges a run that scores on a passed ball as unearned (unlike official MLB
+     * scoring, which treats passed balls the same as wild pitches). False by default.
+     */
+    protected boolean runsScoredAreUnearned() {
+        return false;
     }
 
     public int getRbi() {

@@ -206,17 +206,43 @@ public class GameEvent extends RunnersOnBaseEvent {
         setStrikes(Character.getNumericValue(a[1]));
     }
 
+    // Cumulative "phantom" outs (see AbstractNotation.getPhantomOuts()) charged against
+    // this half-inning as of the end of this event's last notation. Carried forward to
+    // the next GameEvent in the same inning by getStartingPhantomOuts(), the same way
+    // runnersOnBase is carried forward by getRunnersOnBaseBefore()/getRunnersOnBaseAfter().
+    private int endingPhantomOuts = 0;
+
+    private int getStartingPhantomOuts() throws Exception {
+        GameEvent prevEvent = this.getPreviousGameEvent();
+        if (prevEvent != null && prevEvent.getInning() == this.getInning()) {
+            prevEvent.getPitches(); // ensure prevEvent.endingPhantomOuts has been computed
+            return prevEvent.endingPhantomOuts;
+        }
+        return 0;
+    }
+
     public ArrayList<Pitch> getPitches() throws Exception {
         Map<String, Baserunner> runnersOnBase = this.getRunnersOnBaseBefore();
         int currentOuts = this.getOuts();
+        int phantomOuts = this.getStartingPhantomOuts();
         for (int i = 0; i < pitches.size(); i++) {
             if (pitches.get(i).getNotation() != null) {
                 AbstractNotation currentNotation = pitches.get(i).getNotation();
                 currentNotation.setStartOuts(currentOuts);
+                // A prior play this half-inning -- or this very play, if it's the one
+                // extending the inning -- already cost the defense what should have been
+                // its 3rd out, so any runner who crosses the plate as part of this same
+                // play is also unearned. getPhantomOuts() only inspects the raw notation
+                // text, so it's safe to read before moveRunners() (triggered below by
+                // setRunnersOnBaseStart()) has run. See AbstractNotation.moveRunners().
+                int thisPlayPhantomOuts = currentNotation.getPhantomOuts();
+                currentNotation.setUnearnedRunsInEffect(currentOuts + phantomOuts + thisPlayPhantomOuts >= 3);
                 currentNotation.setRunnersOnBaseStart(runnersOnBase);
                 runnersOnBase = currentNotation.getRunnersOnBaseEnd();
                 currentOuts = currentNotation.getStartOuts();
-        
+                phantomOuts += thisPlayPhantomOuts;
+                this.endingPhantomOuts = phantomOuts;
+
                 if (currentNotation instanceof OutNotation) {
                     ((OutNotation)currentNotation).setFielders(this.getFielders());
                 } 

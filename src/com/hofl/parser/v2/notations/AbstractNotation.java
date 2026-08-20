@@ -31,8 +31,14 @@ public abstract class AbstractNotation {
     
     protected Map<String, Integer> breakdown;
     protected int rbi = 0;
-    
+
     private int startOuts = 0;
+
+    // Set by GameEvent.getPitches() when a prior play this half-inning cost the defense
+    // what should have been its 3rd out (see getPhantomOuts()). Runs scored on or after
+    // such a play are unearned for the entire rest of the half-inning, regardless of the
+    // pitcher of record, per the "reconstructed inning" earned-run rule.
+    private boolean unearnedRunsInEffect = false;
     
     protected static String MOVE_RUNNERS_ORDER[] = {
         "SBH", "CSH", 
@@ -307,8 +313,12 @@ public abstract class AbstractNotation {
                     if (runnersScored.containsValue(runner)) {
                         throw new Exception("You can't score twice in one play dummy: " + runner.getPlayerName());
                     }
-                    runnersScored.put(startBase.equals("B") ? "BA" : startBase + "B", new BaserunnerScored(runner));
-                    
+                    BaserunnerScored scored = new BaserunnerScored(runner);
+                    if (this.unearnedRunsInEffect || this.runsScoredAreUnearned()) {
+                        scored.setEarned(false);
+                    }
+                    runnersScored.put(startBase.equals("B") ? "BA" : startBase + "B", scored);
+
                 } else {
                     runners.put(endBase + "B", runner);
                 }
@@ -386,8 +396,37 @@ public abstract class AbstractNotation {
         if (startOuts < 0) {
             throw new Exception("startOuts cannot be less than zero!");
         }
-                
+
         this.startOuts = startOuts;
+    }
+
+    public void setUnearnedRunsInEffect(boolean unearnedRunsInEffect) {
+        this.unearnedRunsInEffect = unearnedRunsInEffect;
+    }
+
+    @JsonIgnore
+    public boolean isUnearnedRunsInEffect() {
+        return this.unearnedRunsInEffect;
+    }
+
+    /**
+     * Number of outs this play should have produced but didn't, because a fielding or
+     * throwing misplay let a batter/runner reach who otherwise would have been retired.
+     * Used to reconstruct the inning for earned-run purposes. 0 by default; notation
+     * types where a misplay can cost an out override this.
+     */
+    public int getPhantomOuts() {
+        return 0;
+    }
+
+    /**
+     * True for notation types where any run scoring on this specific play is unearned
+     * regardless of the outs/reconstructed-inning state -- e.g. Diamond Mind Baseball
+     * charges a run that scores on a passed ball as unearned (unlike official MLB
+     * scoring, which treats passed balls the same as wild pitches). False by default.
+     */
+    protected boolean runsScoredAreUnearned() {
+        return false;
     }
 
     public int getRbi() {

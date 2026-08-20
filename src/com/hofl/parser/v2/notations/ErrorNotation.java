@@ -87,6 +87,19 @@ public class ErrorNotation extends AbstractNotation {
         return false;
     }
 
+    /**
+     * If the batter reached base directly because of this error (as opposed to the
+     * error only advancing a runner who was already on base, e.g. a botched pickoff
+     * throw), then absent the misplay this play would have been an out -- including
+     * when the batter was attempting a sacrifice, since that would still have been
+     * the out. Runs scored on or after this play are unearned for the rest of the
+     * half-inning (see AbstractNotation.getPhantomOuts()/moveRunners()).
+     */
+    @Override
+    public int getPhantomOuts() {
+        return batterAdvancedExtraBase() ? 1 : 0;
+    }
+
     public String getDescription() {
         return "Error";
     }

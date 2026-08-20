@@ -32,21 +32,46 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>5.1.6</version>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
-    <!-- Sources live directly under src/, not the Maven-standard src/main/java,
-         so point Maven at the existing NetBeans layout instead of moving files. -->
+    <!-- Sources live directly under src/, not the Maven-standard src/main/java, so
+         point Maven at the existing NetBeans layout instead of moving files. Tests
+         live at the Maven-standard src/test/java/src/test/resources, which are
+         nested under src/ too, so both the main sourceDirectory scan and the main
+         resources scan below have to explicitly exclude the test/ subtree. -->
     <sourceDirectory>src</sourceDirectory>
     <resources>
       <resource>
         <directory>src</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>test/**</exclude>
         </excludes>
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <excludes>
+            <exclude>test/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>

@@ -86,7 +86,19 @@ public class OutNotation extends AbstractNotation {
             return true;
         }
         return false;
-    }   
+    }
+
+    /**
+     * Covers the force-out-negated-by-throwing-error case (e.g. a fielder's choice
+     * where the batter himself reaches base only because of an infield throwing
+     * error): absent the misplay, the batter would have been the out. Requires the
+     * batter to have actually reached a base ("B-" present) rather than just an
+     * existing runner advancing further on the same throw.
+     */
+    @Override
+    public int getPhantomOuts() {
+        return (throwingErrorOnInfielder() && batterAdvancedExtraBase()) ? 1 : 0;
+    }
     
     public static final String[] ERROR_POSSIBLES = {"e1.","e2.","e3.","e4.","e5.","e6.","e7.","e8.","e9."};
     

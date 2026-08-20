@@ -28,6 +28,16 @@ public class PlayerLine extends AbstractBoxScoreItem  {
     public String getPlayerName() {
         return this.playerName.trim();
     }
+
+    /**
+     * A substitute (pinch hitter/runner, defensive replacement) is printed with a
+     * leading space before the name in the raw box score line; a starter's name has
+     * none. Must be checked against the untrimmed name -- getPlayerName() trims it
+     * away.
+     */
+    public boolean isSubstitute() {
+        return this.playerName.length() > 0 && this.playerName.charAt(0) == ' ';
+    }
     
     public String getPosition() {
         return this.position.trim().toUpperCase();

@@ -45,15 +45,13 @@ public class RunScored
     public RunScored(String playerTeamName, String playerName, int inning, int boxScoreOrdinal,
             int outs, int org, int seasonType, String playerPosition, String stadium, String homeAway)
     {
-        if (playerName == null || playerName.trim().length() == 0)
+        if (playerName == null || playerName.trim().length() == 0) {
             this.playerName = "FIXME!";
 //            throw new RuntimeException("Player name cannot be null for entry team: " + playerTeamName + ", inning:" +
 //                    inning + ", ordinal: " + boxScoreOrdinal + ", outs:" + outs);
-        if (playerName != null && playerName.trim().length() == 0)
-//            this.playerName = null;
-            this.playerName = "FIXME!";
-        else
+        } else {
             this.playerName = playerName;
+        }
         this.playerTeamName = playerTeamName;
         
         this.inning = inning;

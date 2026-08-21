@@ -347,7 +347,12 @@ public class BoxScoreAssembler implements Serializable {
                     line = reader.readLine();
                 }
                 
-            } else if (linescoreHeaderPattern.matcher(line).find()) {
+            } else if (linescoreHeaderPattern.matcher(line).find() || line.indexOf("LOB") > -1) {
+                // Games that go past 12 innings wrap onto a second linescore header
+                // ("                      13     R  H  E   LOB DP") that doesn't match
+                // linescoreHeaderPattern's fixed-column layout for the normal case, so
+                // it's caught here by the presence of "LOB", which only ever appears on
+                // a linescore header line (whether wrapped or not).
                 game.parseLineScore(line, reader.readLine(), reader.readLine());
             } else if (asterixLineCt > 0) {
                 // Means we're into the last part of the box

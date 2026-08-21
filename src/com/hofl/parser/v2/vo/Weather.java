@@ -23,21 +23,39 @@ public class Weather {
 
     public Weather (String weatherLine) {
         // Temperature: 73, Sky: clear, Wind: left to right at 1 MPH, Rain Delays: 12 minutes.
+        // "Field:" is only present for a notable field condition (e.g. wet), so it can't
+        // be assumed to always be the 2nd token -- each token is matched by its own
+        // label instead of relying on a fixed position/count.
         StringTokenizer tok = new StringTokenizer(weatherLine, ",");
-        
-        String token = tok.nextToken();
-        this.setTemperature(Integer.parseInt(token.substring(token.indexOf(":")+1).trim()));
-        
-        token = tok.nextToken();
-        this.setSky(token.substring(token.indexOf(":")+1).trim());
-        
-        if (tok.hasMoreTokens()) {
-            token = tok.nextToken();
-            if (token.indexOf("MPH") == -1) {
-                this.setWindSpeed("None");
-            } else {
-                this.setWindDirection(token.substring(token.indexOf(":")+1, token.indexOf(" at ")).trim());
-                this.setWindSpeed(token.substring(token.indexOf(" at ")+4, token.indexOf("MPH")+3).trim());
+
+        while (tok.hasMoreTokens()) {
+            String token = tok.nextToken().trim();
+            int colonIdx = token.indexOf(":");
+            if (colonIdx == -1) {
+                continue;
+            }
+            String label = token.substring(0, colonIdx).trim();
+            String value = token.substring(colonIdx + 1).trim();
+
+            if (label.equalsIgnoreCase("Temperature")) {
+                this.setTemperature(Integer.parseInt(value));
+            } else if (label.equalsIgnoreCase("Field")) {
+                this.setFieldCondition(value);
+            } else if (label.equalsIgnoreCase("Sky")) {
+                this.setSky(value);
+            } else if (label.equalsIgnoreCase("Wind")) {
+                if (value.indexOf("MPH") == -1) {
+                    this.setWindSpeed("None");
+                } else {
+                    this.setWindDirection(value.substring(0, value.indexOf(" at ")).trim());
+                    this.setWindSpeed(value.substring(value.indexOf(" at ") + 4, value.indexOf("MPH") + 3).trim());
+                }
+            } else if (label.equalsIgnoreCase("Rain Delays")) {
+                if (this.rainDelays == null) {
+                    this.rainDelays = new ArrayList<String>();
+                }
+                // Value may end in "." since this is always the last field on the line.
+                this.rainDelays.add(value.endsWith(".") ? value.substring(0, value.length() - 1).trim() : value);
             }
         }
     }

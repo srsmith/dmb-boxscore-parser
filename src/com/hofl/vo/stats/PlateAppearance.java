@@ -1,5 +1,6 @@
 package com.hofl.vo.stats;
 
+import com.hofl.sql.SqlText;
 import com.hofl.vo.PlayByPlayNote;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -370,10 +371,10 @@ public class PlateAppearance {
         b.append(this.boxScoreId + ",");
     	b.append(this.org + ",");
     	b.append(this.seasonType + ",");
-        b.append("'" + this.stadium.replaceAll("'", "\\\\'") + "','");
+        b.append("'" + SqlText.escape(this.stadium) + "','");
         b.append(this.teamName + "','");
-        
-        b.append(this.playerName.trim().replaceAll("'", "\\\\'") + "','");
+
+        b.append(SqlText.escape(this.playerName.trim()) + "','");
 
         b.append(this.playerPosition + "','");
         b.append(this.homeAway + "',");
@@ -405,7 +406,7 @@ public class PlateAppearance {
         }
         
         // Add pitcher info
-        b.append("'" + this.pitcherName.trim().replaceAll("'", "\\\\'") + "','");
+        b.append("'" + SqlText.escape(this.pitcherName.trim()) + "','");
         b.append(this.pitcherTeamName + "',");
         
         // Version 2.0 with count and description
@@ -421,7 +422,7 @@ public class PlateAppearance {
             b.append(playByPlayNote.getStrikeCount() + ",");
             b.append(playByPlayNote.getBallCount() + ",");
             b.append(playByPlayNote.getDetailedPitchCount(PlayByPlayNote.ALL_PITCHES) + ",'");
-            b.append(playByPlayNote.getDetails().trim().replaceAll("'", "\\\\'"));
+            b.append(SqlText.escape(playByPlayNote.getDetails().trim()));
             b.append("',");
         }
 

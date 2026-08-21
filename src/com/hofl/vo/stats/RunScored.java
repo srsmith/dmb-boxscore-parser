@@ -6,6 +6,7 @@
  */
 package com.hofl.vo.stats;
 
+import com.hofl.sql.SqlText;
 import com.hofl.vo.PlayByPlayNote;
 
 /**
@@ -146,7 +147,7 @@ public class RunScored
         b.append(this.boxScoreId + ",");
         b.append(this.org + ",");
         b.append(this.seasonType + ",");
-        b.append("'" + this.stadium.replaceAll("'", "\\\\'") + "','");
+        b.append("'" + SqlText.escape(this.stadium) + "','");
         b.append(this.playerTeamName + ",");
         
         if (this.playerName.indexOf(",") > -1)
@@ -210,18 +211,18 @@ public class RunScored
         b.append(this.boxScoreId + ",");
         b.append(this.org + ",");
         b.append(this.seasonType + ",");
-        b.append("'" + this.stadium.replaceAll("'", "\\\\'") + "',");
+        b.append("'" + SqlText.escape(this.stadium) + "',");
         b.append("'" + this.playerTeamName + "','");
-        b.append(this.getPlayerName().trim().replaceAll("'", "\\\\'") + "',");
+        b.append(SqlText.escape(this.getPlayerName().trim()) + "',");
         b.append("'" + this.playerPosition + "',");
         b.append("'" + this.homeAway + "',");
         b.append(this.boxScoreOrdinal + ",");
         b.append(this.inning + ",");
         b.append(this.outs + ",");
         // Add pitcher info
-        b.append("'" + this.pitcherName.trim().replaceAll("'", "\\\\'") + "','");
+        b.append("'" + SqlText.escape(this.pitcherName.trim()) + "','");
         b.append(this.pitcherTeamName + "',1,");
-        b.append("'" + this.getPlayerName().trim().replaceAll("'", "\\\\'") + " scored');");
+        b.append("'" + SqlText.escape(this.getPlayerName().trim()) + " scored');");
     }
 
     public String getStadium()

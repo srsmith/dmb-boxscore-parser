@@ -513,9 +513,9 @@ public class BoxScore implements Serializable {
     private int setBattingOrder(PlayerLine playerLine, Hashtable battingOrderMap, int battingOrder) {
         String playerName = playerLine.getPlayerName();
         if (!battingOrderMap.containsKey(playerName.trim()) && playerName.trim().length() > 0) {
-            if (playerName.indexOf(" ") == 0 && playerName.trim().length() > 0) {
-                // If there's a space in the first line of the name, it's a pinch hitter,
-                // so keep the batting order the same.  But make sure it's not an empty line
+            if (playerLine.isSubstitute()) {
+                // Pinch hitter/runner or defensive substitute -- keep the batting
+                // order the same as the player they replaced.
             } else {
                 // Increment the order otherwise.
                 battingOrder++;

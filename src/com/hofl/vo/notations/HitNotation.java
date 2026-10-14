@@ -69,10 +69,10 @@ public class HitNotation extends AbstractNotation {
     
     public static boolean isTriple(String notation) {
     	if (notation.indexOf("T") == 0 &&
-    			(notation.length() == 1 || 
+    			(notation.length() == 1 ||
     			 notation.indexOf("T.") == 0 ||
 			     notation.indexOf("T;") == 0 ||
-				 notation.indexOf("T//") == 0)) {
+				 notation.indexOf("T/") == 0)) {
     		return true;
     	}
         return false;

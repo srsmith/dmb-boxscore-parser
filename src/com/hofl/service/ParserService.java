@@ -220,43 +220,51 @@ public class ParserService {
         b.append(boxScore.getPitchingLinesAsSQLInserts());
 
         //System.out.println(b);
-        
-        Connection conn = getConnection();
-        //System.out.println("overwrite == " + overwrite);
-        if (overwrite) {
-            delete(boxScore.getBoxScoreId(), org);
-        }
-        Statement s = conn.createStatement();
-        StringTokenizer tok = new StringTokenizer(b.toString(), System.getProperty("line.separator"));
-        int ct = 0;
-        while (tok.hasMoreTokens()) {
-            String sql = tok.nextToken();
-            if (sql != null && sql.trim().length() > 0) {
-                ct++;
-                // System.out.println(sql.trim() + "; ## " + ct);
-                s.addBatch(sql.trim());
-            }
-        }
-        //System.out.println("ct = " + ct);
 
-        for (int i : s.executeBatch()) {
-            if (i == Statement.EXECUTE_FAILED) {
+        Connection conn = null;
+        Statement s = null;
+        try {
+            conn = getConnection();
+            //System.out.println("overwrite == " + overwrite);
+            if (overwrite) {
                 delete(boxScore.getBoxScoreId(), org);
-                System.out.println(s.toString());
-                throw new Exception("Insert failed for boxscore id " + boxScore.getBoxScoreId());
             }
+            s = conn.createStatement();
+            StringTokenizer tok = new StringTokenizer(b.toString(), System.getProperty("line.separator"));
+            int ct = 0;
+            while (tok.hasMoreTokens()) {
+                String sql = tok.nextToken();
+                if (sql != null && sql.trim().length() > 0) {
+                    ct++;
+                    // System.out.println(sql.trim() + "; ## " + ct);
+                    s.addBatch(sql.trim());
+                }
+            }
+            //System.out.println("ct = " + ct);
+
+            for (int i : s.executeBatch()) {
+                if (i == Statement.EXECUTE_FAILED) {
+                    delete(boxScore.getBoxScoreId(), org);
+                    System.out.println(s.toString());
+                    throw new Exception("Insert failed for boxscore id " + boxScore.getBoxScoreId());
+                }
+            }
+            //System.out.println("insert() of " + boxScore.getBoxScoreId() + " complete.");
+        } finally {
+            DBUtils.close(conn, s, null);
         }
-        
-        //System.out.println("insert() of " + boxScore.getBoxScoreId() + " complete.");
-        DBUtils.close(conn, s, null);
     }
 
     private void delete(String boxScoreId, int org) throws Throwable {
-        Connection conn = getConnection();
-        Statement s = conn.createStatement();
-        String cmd = String.format(DELETE_BOXSCORE_LINES, boxScoreId, org);
-        s.execute(String.format(DELETE_BOXSCORE_LINES, boxScoreId, org));
-        DBUtils.close(conn, s, null);
+        Connection conn = null;
+        Statement s = null;
+        try {
+            conn = getConnection();
+            s = conn.createStatement();
+            s.execute(String.format(DELETE_BOXSCORE_LINES, boxScoreId, org));
+        } finally {
+            DBUtils.close(conn, s, null);
+        }
     }
     private final static String DELETE_BOXSCORE_LINES = "delete from parsed_boxes where boxscore_id = %s and org = %s";
 

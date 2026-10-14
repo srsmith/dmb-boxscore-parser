@@ -3,6 +3,7 @@
  */
 package com.hofl.vo.stats;
 
+import com.hofl.sql.SqlText;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -131,10 +132,10 @@ public class PitchingLine
         b.append(this.org + ",");
         b.append(this.seasonType + ",");
         
-        b.append("'" + this.stadium.replaceAll("'", "\\\\'") + "',");
+        b.append("'" + SqlText.escape(this.stadium) + "',");
         b.append("'" + this.pitcherTeamName + "',");
         b.append("'" + this.homeAway + "',");
-        b.append("'" + this.rawLine.substring(0,17).trim().replaceAll("'", "\\\\'") + "'");
+        b.append("'" + SqlText.escape(this.rawLine.substring(0,17).trim()) + "'");
         
         String pitchingLines = this.rawLine.substring(32).trim();
         StringTokenizer tok = new StringTokenizer(pitchingLines," ");

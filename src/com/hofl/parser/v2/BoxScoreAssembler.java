@@ -331,7 +331,18 @@ public class BoxScoreAssembler implements Serializable {
                 awayStartingPitcher = line.substring(0, 17).trim();
                 homeStartingPitcher = line.substring(44, 61).trim();                
             } else if (line.trim().indexOf("Temperature:") > -1) {
-                game.setWeather(line);
+                // The weather line wraps onto a continuation line (e.g. "Rain Delays:
+                // 61 minutes.") when it's too long to fit on one -- every terminating
+                // line ends with a period, so keep appending until we see one.
+                StringBuilder weatherText = new StringBuilder(line.trim());
+                while (!weatherText.toString().trim().endsWith(".")) {
+                    String continuation = reader.readLine();
+                    if (continuation == null) {
+                        break;
+                    }
+                    weatherText.append(" ").append(continuation.trim());
+                }
+                game.setWeather(weatherText.toString());
             } else if (line.indexOf("**************") > -1) {
                 // this is a indicator of a new inning beginning
                 asterixLineCt++;

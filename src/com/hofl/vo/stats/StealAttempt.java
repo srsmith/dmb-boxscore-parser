@@ -1,5 +1,7 @@
 package com.hofl.vo.stats;
 
+import com.hofl.sql.SqlText;
+
 public class StealAttempt {
 
     private String boxScoreId;
@@ -191,9 +193,9 @@ public class StealAttempt {
         b.append((new StringBuilder()).append(boxScoreId).append(",").toString());
         b.append((new StringBuilder()).append(org).append(",").toString());
         b.append((new StringBuilder()).append(seasonType).append(",").toString());
-        b.append((new StringBuilder()).append("'").append(stadium.replaceAll("'", "\\\\'")).append("',").toString());
+        b.append((new StringBuilder()).append("'").append(SqlText.escape(stadium)).append("',").toString());
         b.append((new StringBuilder()).append("'").append(playerTeamName).append("','").toString());
-        b.append((new StringBuilder()).append(playerName.trim().replaceAll("'", "\\\\'")).append("',").toString());
+        b.append((new StringBuilder()).append(SqlText.escape(playerName.trim())).append("',").toString());
         b.append((new StringBuilder()).append("'").append(homeAway).append("',").toString());
         b.append((new StringBuilder()).append(boxScoreOrdinal).append(",").toString());
         b.append((new StringBuilder()).append(inning).append(",").toString());
@@ -206,7 +208,7 @@ public class StealAttempt {
             b.append("1,0,1,0,");
         }
         b.append((new StringBuilder()).append("'").append(base).append("',").toString());
-        b.append((new StringBuilder()).append("'").append(pitcherName.trim().replaceAll("'", "\\\\'")).append("','").toString());
+        b.append((new StringBuilder()).append("'").append(SqlText.escape(pitcherName.trim())).append("','").toString());
         b.append((new StringBuilder()).append(pitcherTeamName).append("');").toString());
     }
 

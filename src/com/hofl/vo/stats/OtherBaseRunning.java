@@ -1,5 +1,6 @@
 package com.hofl.vo.stats;
 
+import com.hofl.sql.SqlText;
 import com.hofl.vo.PlayByPlayNote;
 
 public class OtherBaseRunning {
@@ -102,9 +103,9 @@ public class OtherBaseRunning {
         b.append(this.boxScoreId + ",");
         b.append(this.org + ",");
         b.append(this.seasonType + ",");
-        b.append("'" + this.stadium.replaceAll("'", "\\\\'") + "',");
+        b.append("'" + SqlText.escape(this.stadium) + "',");
         b.append("'" + this.playerTeamName + "','");
-        b.append(this.playerName.trim().replaceAll("'", "\\\\'") + "',");
+        b.append(SqlText.escape(this.playerName.trim()) + "',");
         b.append("'" + this.homeAway + "',");
         b.append(this.boxScoreOrdinal + ",");
         b.append(this.inning + ",");
@@ -112,9 +113,9 @@ public class OtherBaseRunning {
         b.append(this.isWildPitch + "," + this.isPassedBall + "," + this.isPickOffError);
         b.append("," + this.base + ",");
         // Add pitcher info
-        b.append("'" + this.pitcherName.trim().replaceAll("'", "\\\\'") + "','");
+        b.append("'" + SqlText.escape(this.pitcherName.trim()) + "','");
         b.append(this.pitcherTeamName  + "','");
-        b.append(this.playByPlayNote.getDetails().replaceAll("'", "\\\\'")  + "');");
+        b.append(SqlText.escape(this.playByPlayNote.getDetails())  + "');");
 //        b.append(this.playByPlayNote.getDetails().replaceAll("'", "\\\\'")  + "','");
 //        b.append(this.playByPlayNote.getPitchSequenceEscaped() + "');");
     }
